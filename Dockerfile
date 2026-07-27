@@ -8,6 +8,11 @@
 # ---- Stage 0: shared dependency install ----
 FROM node:20-bookworm-slim AS deps
 WORKDIR /app
+# node:*-bookworm-slim doesn't include OpenSSL, but Prisma's engine binaries
+# need it present at runtime to detect the right engine and actually load —
+# without this, Prisma can't tell what it's running on, guesses wrong, and
+# the query/schema engine fails to start.
+RUN apt-get update -y && apt-get install -y openssl && rm -rf /var/lib/apt/lists/*
 COPY package.json package-lock.json ./
 COPY client/package.json client/package.json
 COPY server/package.json server/package.json
@@ -28,6 +33,9 @@ RUN cd server && npx tsc -p tsconfig.json
 FROM node:20-bookworm-slim AS runtime
 WORKDIR /app
 ENV NODE_ENV=production
+
+# Same as the deps stage: OpenSSL has to be present for Prisma's engine to run.
+RUN apt-get update -y && apt-get install -y openssl && rm -rf /var/lib/apt/lists/*
 
 COPY package.json package-lock.json ./
 COPY client/package.json client/package.json
