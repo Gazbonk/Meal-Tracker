@@ -9,5 +9,15 @@ body,
 }
 
 body {
-  @apply bg-gray-50 text-gray-900;
+  @apply bg-gray-100 text-gray-900 antialiased;
+  background-image: radial-gradient(at top, rgb(245 247 242 / 0.6), transparent 55%);
+  background-attachment: fixed;
+}
+
+* {
+  scrollbar-width: thin;
+}
+
+::selection {
+  @apply bg-brand-200 text-brand-900;
 }

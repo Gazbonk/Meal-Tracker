@@ -74,24 +74,24 @@ export default function CalendarPage() {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-4">
-        <h1 className="text-xl font-bold">Weekly Plan</h1>
-        <div className="flex items-center gap-2 text-sm">
+      <div className="flex items-center justify-between mb-5">
+        <h1 className="text-2xl font-semibold text-gray-800 tracking-tight">Weekly Plan</h1>
+        <div className="flex items-center gap-1 text-sm bg-white border border-gray-200 rounded-full p-1 shadow-soft">
           <button
             onClick={() => setWeekStart((w) => addDays(w, -7))}
-            className="px-3 py-1.5 border border-gray-300 rounded-md hover:bg-gray-50"
+            className="px-3 py-1.5 rounded-full text-gray-600 hover:bg-gray-100 transition-colors"
           >
             ← Prev
           </button>
           <button
             onClick={() => setWeekStart(startOfWeek(new Date()))}
-            className="px-3 py-1.5 border border-gray-300 rounded-md hover:bg-gray-50"
+            className="px-3 py-1.5 rounded-full font-medium bg-brand-600 text-white hover:bg-brand-700 transition-colors"
           >
             Today
           </button>
           <button
             onClick={() => setWeekStart((w) => addDays(w, 7))}
-            className="px-3 py-1.5 border border-gray-300 rounded-md hover:bg-gray-50"
+            className="px-3 py-1.5 rounded-full text-gray-600 hover:bg-gray-100 transition-colors"
           >
             Next →
           </button>
@@ -100,15 +100,30 @@ export default function CalendarPage() {
 
       {error && <p className="text-red-600 text-sm mb-3">{error}</p>}
       {loading ? (
-        <p className="text-gray-400">Loading...</p>
+        <div className="grid grid-cols-1 sm:grid-cols-7 gap-3">
+          {Array.from({ length: 7 }).map((_, i) => (
+            <div key={i} className="bg-white rounded-2xl border border-gray-200/70 h-64 animate-pulse" />
+          ))}
+        </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-7 gap-3">
           {days.map((day) => {
             const dateStr = toISODate(day);
             const isToday = dateStr === toISODate(new Date());
             return (
-              <div key={dateStr} className="bg-white rounded-lg border border-gray-200 overflow-hidden">
-                <div className={`px-3 py-2 text-sm font-semibold ${isToday ? "bg-brand-600 text-white" : "bg-gray-50 text-gray-700"}`}>
+              <div
+                key={dateStr}
+                className={`bg-white rounded-2xl border overflow-hidden transition-shadow ${
+                  isToday ? "border-brand-300 shadow-soft-md" : "border-gray-200/70 shadow-soft"
+                }`}
+              >
+                <div
+                  className={`px-3 py-2.5 text-sm font-semibold ${
+                    isToday
+                      ? "bg-gradient-to-r from-brand-600 to-brand-700 text-white"
+                      : "bg-gray-50/80 text-gray-700"
+                  }`}
+                >
                   {formatDayLabel(day)}
                 </div>
                 <div className="divide-y divide-gray-100">
@@ -116,15 +131,15 @@ export default function CalendarPage() {
                     const entry = entryFor(dateStr, mealType);
                     const title = entry?.recipe?.name || entry?.customTitle;
                     return (
-                      <div key={mealType} className="relative p-2 min-h-[70px]">
-                        <p className="text-[11px] uppercase tracking-wide text-gray-400 mb-1">
+                      <div key={mealType} className="relative p-2.5 min-h-[74px]">
+                        <p className="text-[10px] font-semibold uppercase tracking-wider text-gray-400 mb-1.5">
                           {MEAL_LABELS[mealType]}
                         </p>
                         {title ? (
                           <div>
                             <button
                               onClick={() => setEditing({ date: dateStr, mealType })}
-                              className="text-sm text-left font-medium text-gray-800 hover:text-brand-700"
+                              className="text-sm text-left font-medium text-gray-800 hover:text-brand-700 transition-colors"
                             >
                               {title}
                             </button>
@@ -141,7 +156,7 @@ export default function CalendarPage() {
                         ) : (
                           <button
                             onClick={() => setEditing({ date: dateStr, mealType })}
-                            className="text-sm text-gray-300 hover:text-brand-600"
+                            className="text-sm text-gray-300 hover:text-brand-600 border border-dashed border-gray-200 hover:border-brand-300 rounded-lg px-2 py-1 w-full text-left transition-colors"
                           >
                             + Add meal
                           </button>

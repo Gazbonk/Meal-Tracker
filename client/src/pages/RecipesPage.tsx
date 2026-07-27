@@ -46,11 +46,11 @@ export default function RecipesPage() {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-4">
-        <h1 className="text-xl font-bold">Recipes</h1>
+      <div className="flex items-center justify-between mb-5">
+        <h1 className="text-2xl font-semibold text-gray-800 tracking-tight">Recipes</h1>
         <Link
           to="/recipes/new"
-          className="bg-brand-600 text-white text-sm px-3 py-2 rounded-md font-medium hover:bg-brand-700"
+          className="bg-brand-600 text-white text-sm px-4 py-2 rounded-xl font-medium shadow-soft hover:bg-brand-700 hover:shadow-soft-md transition-all"
         >
           + New recipe
         </Link>
@@ -58,32 +58,58 @@ export default function RecipesPage() {
 
       {error && <p className="text-red-600 text-sm mb-3">{error}</p>}
       {loading ? (
-        <p className="text-gray-400">Loading...</p>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {Array.from({ length: 3 }).map((_, i) => (
+            <div key={i} className="bg-white rounded-2xl border border-gray-200/70 h-44 animate-pulse" />
+          ))}
+        </div>
       ) : recipes.length === 0 ? (
-        <p className="text-gray-400">No recipes yet. Add your first one!</p>
+        <div className="text-center py-16 bg-white rounded-2xl border border-dashed border-gray-200">
+          <p className="text-3xl mb-2">🍳</p>
+          <p className="text-gray-500">No recipes yet. Add your first one!</p>
+        </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {recipes.map((recipe) => (
-            <div key={recipe.id} className="bg-white border border-gray-200 rounded-lg p-4">
-              <div className="flex items-start justify-between">
-                <h2 className="font-semibold text-gray-800">{recipe.name}</h2>
-              </div>
-              {recipe.tags && <p className="text-xs text-gray-400 mt-1">{recipe.tags}</p>}
-              <ul className="text-sm text-gray-600 mt-2 space-y-0.5">
+            <div
+              key={recipe.id}
+              className="bg-white border border-gray-200/70 rounded-2xl p-4 shadow-soft hover:shadow-soft-md hover:-translate-y-0.5 transition-all duration-200"
+            >
+              <h2 className="font-semibold text-gray-800">{recipe.name}</h2>
+              {recipe.tags && (
+                <div className="flex flex-wrap gap-1 mt-1.5">
+                  {recipe.tags
+                    .split(",")
+                    .map((t) => t.trim())
+                    .filter(Boolean)
+                    .map((tag) => (
+                      <span
+                        key={tag}
+                        className="text-[11px] font-medium bg-brand-50 text-brand-700 px-2 py-0.5 rounded-full"
+                      >
+                        {tag}
+                      </span>
+                    ))}
+                </div>
+              )}
+              <ul className="text-sm text-gray-600 mt-3 space-y-1">
                 {recipe.ingredients.slice(0, 4).map((ing, i) => (
-                  <li key={i}>
-                    • {ing.quantity} {ing.unit} {ing.name}
+                  <li key={i} className="flex items-baseline gap-1.5">
+                    <span className="h-1 w-1 rounded-full bg-gray-300 shrink-0" />
+                    <span>
+                      {ing.quantity} {ing.unit} {ing.name}
+                    </span>
                   </li>
                 ))}
                 {recipe.ingredients.length > 4 && (
-                  <li className="text-gray-400">+ {recipe.ingredients.length - 4} more</li>
+                  <li className="text-gray-400 pl-3">+ {recipe.ingredients.length - 4} more</li>
                 )}
               </ul>
-              <div className="flex items-center gap-3 mt-3 text-sm">
-                <Link to={`/recipes/${recipe.id}/edit`} className="text-brand-700 font-medium hover:underline">
+              <div className="flex items-center gap-3 mt-4 pt-3 border-t border-gray-100 text-sm">
+                <Link to={`/recipes/${recipe.id}/edit`} className="text-brand-700 font-medium hover:text-brand-800">
                   Edit
                 </Link>
-                <button onClick={() => handleDelete(recipe.id)} className="text-red-500 hover:underline">
+                <button onClick={() => handleDelete(recipe.id)} className="text-red-500 hover:text-red-700">
                   Delete
                 </button>
                 <button

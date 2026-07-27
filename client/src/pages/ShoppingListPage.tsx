@@ -72,37 +72,40 @@ export default function ShoppingListPage() {
 
   return (
     <div className="max-w-2xl">
-      <div className="flex items-center justify-between mb-4">
-        <h1 className="text-xl font-bold">Shopping List</h1>
+      <div className="flex items-center justify-between mb-5">
+        <h1 className="text-2xl font-semibold text-gray-800 tracking-tight">Shopping List</h1>
         {hasChecked && (
-          <button onClick={clearChecked} className="text-sm text-gray-500 hover:text-red-600">
+          <button onClick={clearChecked} className="text-sm text-gray-500 hover:text-red-600 transition-colors">
             Clear checked items
           </button>
         )}
       </div>
 
-      <form onSubmit={handleAdd} className="flex flex-wrap gap-2 mb-5 bg-white border border-gray-200 rounded-lg p-3">
+      <form
+        onSubmit={handleAdd}
+        className="flex flex-wrap gap-2 mb-5 bg-white border border-gray-200/70 rounded-2xl shadow-soft p-3"
+      >
         <input
           value={name}
           onChange={(e) => setName(e.target.value)}
           placeholder="Item name"
-          className="flex-1 min-w-[120px] border border-gray-300 rounded-md px-2 py-1.5 text-sm"
+          className="flex-1 min-w-[120px] border border-gray-200 bg-gray-50 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:bg-white transition-shadow"
         />
         <input
           value={quantity}
           onChange={(e) => setQuantity(e.target.value)}
           placeholder="Qty"
-          className="w-20 border border-gray-300 rounded-md px-2 py-1.5 text-sm"
+          className="w-20 border border-gray-200 bg-gray-50 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:bg-white transition-shadow"
         />
         <input
           value={category}
           onChange={(e) => setCategory(e.target.value)}
           placeholder="Category"
-          className="w-32 border border-gray-300 rounded-md px-2 py-1.5 text-sm"
+          className="w-32 border border-gray-200 bg-gray-50 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:bg-white transition-shadow"
         />
         <button
           type="submit"
-          className="bg-brand-600 text-white px-3 py-1.5 rounded-md text-sm font-medium hover:bg-brand-700"
+          className="bg-brand-600 text-white px-4 py-2 rounded-xl text-sm font-medium shadow-soft hover:bg-brand-700 transition-colors"
         >
           Add
         </button>
@@ -110,24 +113,34 @@ export default function ShoppingListPage() {
 
       {error && <p className="text-red-600 text-sm mb-3">{error}</p>}
       {loading ? (
-        <p className="text-gray-400">Loading...</p>
+        <div className="space-y-4">
+          {Array.from({ length: 2 }).map((_, i) => (
+            <div key={i} className="bg-white rounded-2xl border border-gray-200/70 h-28 animate-pulse" />
+          ))}
+        </div>
       ) : items.length === 0 ? (
-        <p className="text-gray-400">Your shopping list is empty.</p>
+        <div className="text-center py-16 bg-white rounded-2xl border border-dashed border-gray-200">
+          <p className="text-3xl mb-2">🛒</p>
+          <p className="text-gray-500">Your shopping list is empty.</p>
+        </div>
       ) : (
         <div className="space-y-4">
           {grouped.map(([cat, catItems]) => (
-            <div key={cat} className="bg-white border border-gray-200 rounded-lg overflow-hidden">
-              <div className="px-3 py-2 bg-gray-50 text-xs font-semibold uppercase tracking-wide text-gray-500">
+            <div
+              key={cat}
+              className="bg-white border border-gray-200/70 rounded-2xl shadow-soft overflow-hidden"
+            >
+              <div className="px-4 py-2.5 bg-gray-50/80 text-xs font-semibold uppercase tracking-wider text-gray-500">
                 {cat}
               </div>
               <ul className="divide-y divide-gray-100">
                 {catItems.map((item) => (
-                  <li key={item.id} className="flex items-center gap-3 px-3 py-2">
+                  <li key={item.id} className="group flex items-center gap-3 px-4 py-2.5 hover:bg-gray-50/60 transition-colors">
                     <input
                       type="checkbox"
                       checked={item.checked}
                       onChange={() => toggleChecked(item)}
-                      className="h-4 w-4 accent-brand-600"
+                      className="h-[18px] w-[18px] rounded accent-brand-600 cursor-pointer"
                     />
                     <span className={`flex-1 text-sm ${item.checked ? "line-through text-gray-400" : "text-gray-700"}`}>
                       {item.name}
@@ -135,7 +148,10 @@ export default function ShoppingListPage() {
                         <span className="text-gray-400"> — {item.quantity} {item.unit}</span>
                       )}
                     </span>
-                    <button onClick={() => removeItem(item.id)} className="text-gray-300 hover:text-red-500 text-sm">
+                    <button
+                      onClick={() => removeItem(item.id)}
+                      className="text-gray-300 hover:text-red-500 text-sm opacity-0 group-hover:opacity-100 transition-opacity"
+                    >
                       ✕
                     </button>
                   </li>

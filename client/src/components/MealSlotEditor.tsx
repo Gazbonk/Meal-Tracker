@@ -31,12 +31,15 @@ export default function MealSlotEditor({
   }
 
   return (
-    <div className="fixed inset-0 z-30 bg-black/20 flex items-start justify-center pt-24" onClick={onClose}>
+    <div
+      className="fixed inset-0 z-30 bg-gray-900/20 backdrop-blur-[2px] flex items-start justify-center pt-24"
+      onClick={onClose}
+    >
       <div
-        className="bg-white rounded-lg shadow-xl border border-gray-200 p-4 w-72"
+        className="bg-white rounded-2xl shadow-soft-md border border-gray-100 p-5 w-72"
         onClick={(e) => e.stopPropagation()}
       >
-        <h3 className="font-medium text-sm text-gray-700 mb-3">Plan this meal</h3>
+        <h3 className="font-semibold text-sm text-gray-800 mb-3.5">Plan this meal</h3>
 
         <label className="block text-xs font-medium text-gray-500 mb-1">Pick a recipe</label>
         <select
@@ -45,7 +48,7 @@ export default function MealSlotEditor({
             setRecipeId(e.target.value);
             if (e.target.value) setCustomTitle("");
           }}
-          className="w-full border border-gray-300 rounded-md px-2 py-1.5 text-sm mb-3"
+          className="w-full border border-gray-200 bg-gray-50 rounded-lg px-2.5 py-2 text-sm mb-3 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:bg-white transition-shadow"
         >
           <option value="">-- none --</option>
           {recipes.map((r) => (
@@ -63,26 +66,29 @@ export default function MealSlotEditor({
             if (e.target.value) setRecipeId("");
           }}
           placeholder="e.g. Leftovers, Eating out"
-          className="w-full border border-gray-300 rounded-md px-2 py-1.5 text-sm mb-4"
+          className="w-full border border-gray-200 bg-gray-50 rounded-lg px-2.5 py-2 text-sm mb-4 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:bg-white transition-shadow"
         />
 
-        <div className="flex justify-between gap-2">
+        <div className="flex justify-between items-center gap-2">
           <button
             onClick={() => {
               onClear();
               onClose();
             }}
-            className="text-xs text-red-500 hover:text-red-700"
+            className="text-xs text-red-500 hover:text-red-700 font-medium"
           >
             Clear slot
           </button>
           <div className="flex gap-2">
-            <button onClick={onClose} className="text-xs text-gray-500 px-2 py-1.5">
+            <button
+              onClick={onClose}
+              className="text-xs text-gray-500 px-2.5 py-1.5 rounded-lg hover:bg-gray-100 transition-colors"
+            >
               Cancel
             </button>
             <button
               onClick={handleSave}
-              className="text-xs bg-brand-600 text-white px-3 py-1.5 rounded-md font-medium hover:bg-brand-700"
+              className="text-xs bg-brand-600 text-white px-3.5 py-1.5 rounded-lg font-medium shadow-soft hover:bg-brand-700 transition-colors"
             >
               Save
             </button>
