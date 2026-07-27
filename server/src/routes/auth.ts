@@ -35,7 +35,7 @@ router.post("/login", async (req, res) => {
   const token = signToken({ userId: user.id, householdId: user.householdId });
   res.json({
     token,
-    user: { id: user.id, email: user.email, name: user.name, isAdmin: user.isAdmin },
+    user: { id: user.id, email: user.email, name: user.name, isAdmin: user.isAdmin, isSuperAdmin: user.isSuperAdmin },
     household: { id: user.household.id, name: user.household.name, inviteCode: user.household.inviteCode },
   });
 });
@@ -49,7 +49,7 @@ router.get("/me", requireAuth, async (req: AuthedRequest, res) => {
     return res.status(404).json({ error: "User not found" });
   }
   res.json({
-    user: { id: user.id, email: user.email, name: user.name, isAdmin: user.isAdmin },
+    user: { id: user.id, email: user.email, name: user.name, isAdmin: user.isAdmin, isSuperAdmin: user.isSuperAdmin },
     household: { id: user.household.id, name: user.household.name, inviteCode: user.household.inviteCode },
   });
 });

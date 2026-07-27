@@ -29,6 +29,7 @@ model User {
   passwordHash String
   name         String
   isAdmin      Boolean  @default(false)
+  isSuperAdmin Boolean  @default(false) // global, independent of isAdmin
   createdAt    DateTime @default(now())
 
   householdId String
@@ -40,6 +41,7 @@ model Recipe {
   name         String
   instructions String?
   tags         String? // comma-separated
+  sourceUrl    String? // set when created via URL import
   createdAt    DateTime @default(now())
 
   householdId String

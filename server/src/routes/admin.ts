@@ -12,7 +12,7 @@ router.get("/users", async (req: AuthedRequest, res) => {
   const users = await prisma.user.findMany({
     where: { householdId: req.householdId },
     orderBy: { createdAt: "asc" },
-    select: { id: true, name: true, email: true, isAdmin: true, createdAt: true },
+    select: { id: true, name: true, email: true, isAdmin: true, isSuperAdmin: true, createdAt: true },
   });
   res.json(users);
 });
@@ -45,7 +45,7 @@ router.post("/users", async (req: AuthedRequest, res) => {
       isAdmin: isAdmin ?? false,
       householdId: req.householdId as string,
     },
-    select: { id: true, name: true, email: true, isAdmin: true, createdAt: true },
+    select: { id: true, name: true, email: true, isAdmin: true, isSuperAdmin: true, createdAt: true },
   });
   res.status(201).json(user);
 });
@@ -96,7 +96,7 @@ router.patch("/users/:id", async (req: AuthedRequest, res) => {
       isAdmin,
       ...(newPassword ? { passwordHash: await bcrypt.hash(newPassword, 10) } : {}),
     },
-    select: { id: true, name: true, email: true, isAdmin: true, createdAt: true },
+    select: { id: true, name: true, email: true, isAdmin: true, isSuperAdmin: true, createdAt: true },
   });
   res.json(user);
 });

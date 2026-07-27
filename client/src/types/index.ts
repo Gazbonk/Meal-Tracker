@@ -3,6 +3,7 @@ export interface User {
   email: string;
   name: string;
   isAdmin: boolean;
+  isSuperAdmin: boolean;
 }
 
 export interface Household {
@@ -16,7 +17,17 @@ export interface ManagedUser {
   name: string;
   email: string;
   isAdmin: boolean;
+  isSuperAdmin: boolean;
   createdAt: string;
+}
+
+export interface ManagedHousehold {
+  id: string;
+  name: string;
+  inviteCode: string;
+  createdAt: string;
+  userCount: number;
+  recipeCount: number;
 }
 
 export interface Ingredient {
@@ -32,7 +43,16 @@ export interface Recipe {
   name: string;
   instructions?: string | null;
   tags?: string | null;
+  sourceUrl?: string | null;
   ingredients: Ingredient[];
+}
+
+export interface RecipeImportDraft {
+  name: string;
+  tags?: string;
+  instructions?: string;
+  ingredients: Ingredient[];
+  sourceUrl: string;
 }
 
 export const MEAL_TYPES = ["breakfast", "lunch", "dinner"] as const;

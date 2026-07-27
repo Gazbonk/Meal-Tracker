@@ -44,9 +44,18 @@ export default function Nav() {
               Admin
             </NavLink>
           )}
+          {user?.isSuperAdmin && (
+            <NavLink to="/households" className={linkClass}>
+              Households
+            </NavLink>
+          )}
         </div>
         <div className="flex items-center gap-3">
-          {household && <span className="hidden md:inline text-sm text-gray-400">{household.name}</span>}
+          {household && (
+            <span className="hidden lg:inline text-sm text-gray-400 whitespace-nowrap truncate max-w-[10rem]">
+              {household.name}
+            </span>
+          )}
           {user && (
             <div className="flex items-center gap-2">
               <span className="flex h-7 w-7 items-center justify-center rounded-full bg-brand-100 text-brand-700 text-xs font-semibold">

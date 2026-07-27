@@ -176,6 +176,11 @@ export default function AdminPage() {
                         Admin
                       </span>
                     )}
+                    {u.isSuperAdmin && (
+                      <span className="bg-gray-800 text-white px-2 py-0.5 rounded-full text-[11px] font-medium">
+                        Super Admin
+                      </span>
+                    )}
                   </div>
                   <div className="flex items-center gap-1 text-xs">
                     <button

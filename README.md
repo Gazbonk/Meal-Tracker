@@ -6,6 +6,8 @@ A simple meal-planning and shopping-list app for two people sharing a household.
 - **Recipe library** — save recipes with ingredients; add all of a recipe's ingredients to the shopping list in one click.
 - **Shared shopping list** — grouped by category, check items off, clear checked items.
 - **Admin-managed accounts** — there's no public signup. An admin creates, edits, and removes accounts from the `/admin` page.
+- **Multiple households** — a super-admin can spin up additional, fully separate households on the same instance (e.g. for other family/friends), each with its own admin, users, recipes, and shopping list, invisible to each other.
+- **Import a recipe from a URL** — paste a link (e.g. a Substack post) and it pre-fills the recipe form for you to review before saving.
 
 ## Stack
 
@@ -49,6 +51,23 @@ There's no public signup page — signing up is disabled entirely.
 - **First run**: if the database has no users yet, the server creates one admin account on startup from the `ADMIN_EMAIL` / `ADMIN_PASSWORD` / `ADMIN_NAME` values in `server/.env`. Log in with those.
 - **Adding your partner (or anyone else)**: log in as an admin, open **Admin** in the nav, and use "Add an account" to create their login directly — no invite code needed, they're added straight to your shared household.
 - From the same `/admin` page you can promote/demote admins, reset anyone's password, or delete an account. You can't remove your own admin access or delete the last remaining admin.
+
+## Multiple households
+
+Every household on this instance is fully separate — its own recipes, meal plan, shopping list, and accounts, invisible to every other household. By default there's just the one household created on first run, but a **super-admin** (a global role, distinct from the per-household admin above) can create more from a **Households** page in the nav.
+
+- The very first account ever created (the startup bootstrap, from `ADMIN_*` in `.env`) is automatically the instance's super-admin. There's no other way to become one in this version — it's meant for a single instance owner.
+- From **Households**, the super-admin creates a new household by providing a name and its first admin's name/email/password. That person can then manage their own household's accounts from `/admin` exactly as described above, with zero visibility into anyone else's data.
+- The super-admin can also delete a household (with confirmation) — this permanently removes its accounts, recipes, meal plans, and shopping list. You can't delete your own household this way.
+
+## Importing recipes from a URL
+
+On the Recipes page, "+ Import from URL" fetches a page and tries to pre-fill the new-recipe form from it, in two stages:
+
+1. **Structured data first (free, instant)** — many recipe-blog sites embed a `schema.org Recipe` block for SEO. If present, it's parsed directly.
+2. **AI-assisted fallback** — general newsletter/blog platforms like Substack don't have that structured markup; the recipe is just prose mixed into a post. If step 1 finds nothing, the page's article text is sent to Claude (Haiku, for cost) to extract the recipe. This needs `ANTHROPIC_API_KEY` set in your `.env` — it's optional, costs a small amount per import, and without it you'll just get a clear message asking you to enter that recipe manually instead.
+
+Either way, nothing is saved automatically — the result pre-fills the normal recipe form for you to review, correct, and save (or discard).
 
 ## Running in Docker (e.g. on a Raspberry Pi)
 
@@ -134,13 +153,14 @@ Because this makes the app reachable by anyone who guesses or finds the URL, con
 
 ```
 server/            Express API (TypeScript)
-  prisma/schema.prisma   Data models (User w/ isAdmin, Household, Recipe, MealPlanEntry, ShoppingListItem)
+  prisma/schema.prisma   Data models (User w/ isAdmin + isSuperAdmin, Household, Recipe w/ sourceUrl, MealPlanEntry, ShoppingListItem)
   prisma/seed.ts         Demo data seed script
-  src/bootstrapAdmin.ts  Creates the first admin account on startup if none exist
-  src/routes/            auth, recipes, mealplan, shoppinglist, admin endpoints
+  src/bootstrapAdmin.ts  Creates the first admin/super-admin account on startup if none exist
+  src/routes/            auth, recipes (incl. /import), mealplan, shoppinglist, admin, superadmin endpoints
+  src/services/recipeImport/  Fetches a URL, tries schema.org Recipe JSON-LD, falls back to an LLM extraction
   docker-entrypoint.sh   Runs `prisma migrate deploy` then starts the server (Docker only)
 client/             React app (TypeScript, Vite, Tailwind)
-  src/pages/              Login, Calendar, Recipes, Recipe form, Shopping list, Admin
+  src/pages/              Login, Calendar, Recipes, Recipe form, Shopping list, Admin, SuperAdmin (Households)
   src/context/AuthContext.tsx   Stores the JWT and current user/household
   src/api/client.ts             Thin fetch wrapper that attaches the auth token
 Dockerfile           Multi-stage build: client + server into one runtime image

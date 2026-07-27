@@ -8,6 +8,7 @@ import recipeRoutes from "./routes/recipes";
 import mealPlanRoutes from "./routes/mealplan";
 import shoppingListRoutes from "./routes/shoppinglist";
 import adminRoutes from "./routes/admin";
+import superAdminRoutes from "./routes/superadmin";
 import { bootstrapAdmin } from "./bootstrapAdmin";
 
 const app = express();
@@ -22,6 +23,7 @@ app.use("/api/recipes", recipeRoutes);
 app.use("/api/mealplan", mealPlanRoutes);
 app.use("/api/shoppinglist", shoppingListRoutes);
 app.use("/api/admin", adminRoutes);
+app.use("/api/superadmin", superAdminRoutes);
 
 // In the Docker image the built client sits alongside the server at
 // /app/client-dist. In local dev that directory doesn't exist — Vite

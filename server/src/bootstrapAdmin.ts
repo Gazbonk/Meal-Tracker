@@ -5,7 +5,9 @@ import { generateInviteCode } from "./utils/inviteCode";
 // Public signup is disabled, so the very first account has to come from
 // somewhere. On startup, if the database has no users at all, create one
 // admin account from environment variables so there's a way to log in and
-// start managing accounts from /admin.
+// start managing accounts from /admin. This account also becomes the
+// instance's permanent super-admin (the only one able to create additional
+// households from /households) — there's no other path to that role.
 export async function bootstrapAdmin() {
   const userCount = await prisma.user.count();
   if (userCount > 0) return;
@@ -28,7 +30,7 @@ export async function bootstrapAdmin() {
     data: { name: householdName, inviteCode: generateInviteCode() },
   });
   await prisma.user.create({
-    data: { email, passwordHash, name, householdId: household.id, isAdmin: true },
+    data: { email, passwordHash, name, householdId: household.id, isAdmin: true, isSuperAdmin: true },
   });
 
   console.log(`Bootstrapped admin account: ${email}`);

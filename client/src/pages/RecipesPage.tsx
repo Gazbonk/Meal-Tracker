@@ -1,14 +1,20 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { api, ApiError } from "../api/client";
-import { Recipe } from "../types";
+import { Recipe, RecipeImportDraft } from "../types";
 
 export default function RecipesPage() {
+  const navigate = useNavigate();
   const [recipes, setRecipes] = useState<Recipe[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [addingId, setAddingId] = useState<string | null>(null);
   const [addedId, setAddedId] = useState<string | null>(null);
+
+  const [showImport, setShowImport] = useState(false);
+  const [importUrl, setImportUrl] = useState("");
+  const [importing, setImporting] = useState(false);
+  const [importError, setImportError] = useState<string | null>(null);
 
   async function load() {
     setLoading(true);
@@ -44,17 +50,64 @@ export default function RecipesPage() {
     }
   }
 
+  async function handleImport(e: React.FormEvent) {
+    e.preventDefault();
+    if (!importUrl.trim()) return;
+    setImporting(true);
+    setImportError(null);
+    try {
+      const prefill = await api.post<RecipeImportDraft>("/recipes/import", { url: importUrl.trim() });
+      navigate("/recipes/new", { state: { prefill } });
+    } catch (err) {
+      setImportError(err instanceof ApiError ? err.message : "Failed to import recipe");
+    } finally {
+      setImporting(false);
+    }
+  }
+
   return (
     <div>
       <div className="flex items-center justify-between mb-5">
         <h1 className="text-2xl font-semibold text-gray-800 tracking-tight">Recipes</h1>
-        <Link
-          to="/recipes/new"
-          className="bg-brand-600 text-white text-sm px-4 py-2 rounded-xl font-medium shadow-soft hover:bg-brand-700 hover:shadow-soft-md transition-all"
-        >
-          + New recipe
-        </Link>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setShowImport((v) => !v)}
+            className="text-sm px-4 py-2 rounded-xl font-medium text-gray-600 hover:bg-gray-100 transition-colors"
+          >
+            + Import from URL
+          </button>
+          <Link
+            to="/recipes/new"
+            className="bg-brand-600 text-white text-sm px-4 py-2 rounded-xl font-medium shadow-soft hover:bg-brand-700 hover:shadow-soft-md transition-all"
+          >
+            + New recipe
+          </Link>
+        </div>
       </div>
+
+      {showImport && (
+        <form
+          onSubmit={handleImport}
+          className="flex flex-wrap gap-2 mb-5 bg-white border border-gray-200/70 rounded-2xl shadow-soft p-3"
+        >
+          <input
+            type="url"
+            required
+            value={importUrl}
+            onChange={(e) => setImportUrl(e.target.value)}
+            placeholder="Paste a recipe URL (e.g. a Substack post)"
+            className="flex-1 min-w-[200px] border border-gray-200 bg-gray-50 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:bg-white transition-shadow"
+          />
+          <button
+            type="submit"
+            disabled={importing}
+            className="bg-brand-600 text-white px-4 py-2 rounded-xl text-sm font-medium shadow-soft hover:bg-brand-700 transition-colors disabled:opacity-50"
+          >
+            {importing ? "Fetching..." : "Fetch"}
+          </button>
+          {importError && <p className="w-full text-sm text-red-600">{importError}</p>}
+        </form>
+      )}
 
       {error && <p className="text-red-600 text-sm mb-3">{error}</p>}
       {loading ? (

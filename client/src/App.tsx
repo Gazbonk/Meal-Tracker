@@ -7,8 +7,17 @@ import RecipesPage from "./pages/RecipesPage";
 import RecipeFormPage from "./pages/RecipeFormPage";
 import ShoppingListPage from "./pages/ShoppingListPage";
 import AdminPage from "./pages/AdminPage";
+import SuperAdminPage from "./pages/SuperAdminPage";
 
-function ProtectedLayout({ children, adminOnly }: { children: React.ReactNode; adminOnly?: boolean }) {
+function ProtectedLayout({
+  children,
+  adminOnly,
+  superAdminOnly,
+}: {
+  children: React.ReactNode;
+  adminOnly?: boolean;
+  superAdminOnly?: boolean;
+}) {
   const { user, loading } = useAuth();
 
   if (loading) {
@@ -18,6 +27,9 @@ function ProtectedLayout({ children, adminOnly }: { children: React.ReactNode; a
     return <Navigate to="/login" replace />;
   }
   if (adminOnly && !user.isAdmin) {
+    return <Navigate to="/" replace />;
+  }
+  if (superAdminOnly && !user.isSuperAdmin) {
     return <Navigate to="/" replace />;
   }
   return (
@@ -77,6 +89,14 @@ export default function App() {
         element={
           <ProtectedLayout adminOnly>
             <AdminPage />
+          </ProtectedLayout>
+        }
+      />
+      <Route
+        path="/households"
+        element={
+          <ProtectedLayout superAdminOnly>
+            <SuperAdminPage />
           </ProtectedLayout>
         }
       />

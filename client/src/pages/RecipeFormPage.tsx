@@ -1,22 +1,35 @@
 import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { api, ApiError } from "../api/client";
-import { Ingredient, Recipe } from "../types";
+import { Ingredient, Recipe, RecipeImportDraft } from "../types";
 
 const emptyIngredient = (): Ingredient => ({ name: "", quantity: "", unit: "", category: "" });
 
 const inputClass =
   "w-full border border-gray-200 bg-gray-50 rounded-xl px-3.5 py-2.5 text-sm transition-shadow focus:outline-none focus:ring-2 focus:ring-brand-500 focus:bg-white";
 
+function hostnameOf(url: string): string {
+  try {
+    return new URL(url).hostname;
+  } catch {
+    return url;
+  }
+}
+
 export default function RecipeFormPage() {
   const { id } = useParams();
   const isEditing = Boolean(id);
   const navigate = useNavigate();
+  const location = useLocation();
+  const prefill = (location.state as { prefill?: RecipeImportDraft } | null)?.prefill;
 
-  const [name, setName] = useState("");
-  const [tags, setTags] = useState("");
-  const [instructions, setInstructions] = useState("");
-  const [ingredients, setIngredients] = useState<Ingredient[]>([emptyIngredient()]);
+  const [name, setName] = useState(prefill?.name ?? "");
+  const [tags, setTags] = useState(prefill?.tags ?? "");
+  const [instructions, setInstructions] = useState(prefill?.instructions ?? "");
+  const [ingredients, setIngredients] = useState<Ingredient[]>(
+    prefill?.ingredients.length ? prefill.ingredients : [emptyIngredient()]
+  );
+  const [sourceUrl, setSourceUrl] = useState<string | null>(prefill?.sourceUrl ?? null);
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [loading, setLoading] = useState(isEditing);
@@ -29,6 +42,7 @@ export default function RecipeFormPage() {
         setName(recipe.name);
         setTags(recipe.tags || "");
         setInstructions(recipe.instructions || "");
+        setSourceUrl(recipe.sourceUrl || null);
         setIngredients(
           recipe.ingredients.length
             ? recipe.ingredients.map((ing) => ({
@@ -65,6 +79,7 @@ export default function RecipeFormPage() {
         name,
         tags: tags || undefined,
         instructions: instructions || undefined,
+        sourceUrl: sourceUrl || undefined,
         ingredients: ingredients
           .filter((ing) => ing.name.trim())
           .map((ing) => ({
@@ -91,11 +106,22 @@ export default function RecipeFormPage() {
 
   return (
     <div className="max-w-2xl">
-      <h1 className="text-2xl font-semibold text-gray-800 tracking-tight mb-5">
+      <h1 className="text-2xl font-semibold text-gray-800 tracking-tight mb-1">
         {isEditing ? "Edit recipe" : "New recipe"}
       </h1>
+      {sourceUrl && (
+        <p className="text-sm text-gray-400 mb-4">
+          Imported from{" "}
+          <a href={sourceUrl} target="_blank" rel="noreferrer" className="text-brand-600 hover:text-brand-800">
+            {hostnameOf(sourceUrl)}
+          </a>
+        </p>
+      )}
 
-      <form onSubmit={handleSubmit} className="space-y-5 bg-white border border-gray-200/70 rounded-2xl shadow-soft p-6">
+      <form
+        onSubmit={handleSubmit}
+        className={`space-y-5 bg-white border border-gray-200/70 rounded-2xl shadow-soft p-6 ${sourceUrl ? "" : "mt-4"}`}
+      >
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1.5">Name</label>
           <input required value={name} onChange={(e) => setName(e.target.value)} className={inputClass} />

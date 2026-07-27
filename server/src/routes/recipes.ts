@@ -2,23 +2,11 @@ import { Router } from "express";
 import { z } from "zod";
 import { prisma } from "../db";
 import { requireAuth, AuthedRequest } from "../middleware/auth";
+import { recipeSchema } from "../schemas/recipe";
+import { importRecipeFromUrl, RecipeImportError } from "../services/recipeImport";
 
 const router = Router();
 router.use(requireAuth);
-
-const ingredientSchema = z.object({
-  name: z.string().min(1),
-  quantity: z.string().optional(),
-  unit: z.string().optional(),
-  category: z.string().optional(),
-});
-
-const recipeSchema = z.object({
-  name: z.string().min(1),
-  instructions: z.string().optional(),
-  tags: z.string().optional(),
-  ingredients: z.array(ingredientSchema).default([]),
-});
 
 router.get("/", async (req: AuthedRequest, res) => {
   const recipes = await prisma.recipe.findMany({
@@ -38,18 +26,54 @@ router.get("/:id", async (req: AuthedRequest, res) => {
   res.json(recipe);
 });
 
+const importSchema = z.object({ url: z.string().url() });
+
+const IMPORT_ERROR_STATUS: Record<string, number> = {
+  fetch_failed: 502,
+  not_found: 404,
+  timeout: 504,
+  blocked: 502,
+  no_recipe_found: 422,
+  no_api_key: 422,
+  llm_malformed: 502,
+  llm_error: 502,
+};
+
+// Fetches a recipe from an external URL and returns a preview (not saved) in
+// the same shape POST /recipes accepts, for the client to review/edit before
+// saving via the normal create flow.
+router.post("/import", async (req: AuthedRequest, res) => {
+  const parsed = importSchema.safeParse(req.body);
+  if (!parsed.success) {
+    return res.status(400).json({ error: "Enter a valid URL." });
+  }
+
+  try {
+    const preview = await importRecipeFromUrl(parsed.data.url);
+    res.json(preview);
+  } catch (err) {
+    if (err instanceof RecipeImportError) {
+      const status = IMPORT_ERROR_STATUS[err.code] ?? 500;
+      return res.status(status).json({ error: err.message });
+    }
+    console.error(err);
+    res.status(500).json({ error: "Failed to import recipe" });
+  }
+});
+
 router.post("/", async (req: AuthedRequest, res) => {
   const parsed = recipeSchema.safeParse(req.body);
   if (!parsed.success) {
     return res.status(400).json({ error: parsed.error.issues[0].message });
   }
-  const { name, instructions, tags, ingredients } = parsed.data;
+  const { name, instructions, tags, sourceUrl, ingredients } = parsed.data;
 
   const recipe = await prisma.recipe.create({
     data: {
       name,
       instructions,
       tags,
+      sourceUrl,
       householdId: req.householdId as string,
       ingredients: { create: ingredients },
     },
@@ -68,7 +92,7 @@ router.put("/:id", async (req: AuthedRequest, res) => {
   });
   if (!existing) return res.status(404).json({ error: "Recipe not found" });
 
-  const { name, instructions, tags, ingredients } = parsed.data;
+  const { name, instructions, tags, sourceUrl, ingredients } = parsed.data;
 
   const recipe = await prisma.$transaction(async (tx) => {
     await tx.recipeIngredient.deleteMany({ where: { recipeId: req.params.id } });
@@ -78,6 +102,7 @@ router.put("/:id", async (req: AuthedRequest, res) => {
         name,
         instructions,
         tags,
+        sourceUrl,
         ingredients: { create: ingredients },
       },
       include: { ingredients: true },
