@@ -2,13 +2,13 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import { useAuth } from "./context/AuthContext";
 import Nav from "./components/Nav";
 import LoginPage from "./pages/LoginPage";
-import SignupPage from "./pages/SignupPage";
 import CalendarPage from "./pages/CalendarPage";
 import RecipesPage from "./pages/RecipesPage";
 import RecipeFormPage from "./pages/RecipeFormPage";
 import ShoppingListPage from "./pages/ShoppingListPage";
+import AdminPage from "./pages/AdminPage";
 
-function ProtectedLayout({ children }: { children: React.ReactNode }) {
+function ProtectedLayout({ children, adminOnly }: { children: React.ReactNode; adminOnly?: boolean }) {
   const { user, loading } = useAuth();
 
   if (loading) {
@@ -16,6 +16,9 @@ function ProtectedLayout({ children }: { children: React.ReactNode }) {
   }
   if (!user) {
     return <Navigate to="/login" replace />;
+  }
+  if (adminOnly && !user.isAdmin) {
+    return <Navigate to="/" replace />;
   }
   return (
     <div className="min-h-screen">
@@ -29,7 +32,6 @@ export default function App() {
   return (
     <Routes>
       <Route path="/login" element={<LoginPage />} />
-      <Route path="/signup" element={<SignupPage />} />
       <Route
         path="/"
         element={
@@ -67,6 +69,14 @@ export default function App() {
         element={
           <ProtectedLayout>
             <ShoppingListPage />
+          </ProtectedLayout>
+        }
+      />
+      <Route
+        path="/admin"
+        element={
+          <ProtectedLayout adminOnly>
+            <AdminPage />
           </ProtectedLayout>
         }
       />

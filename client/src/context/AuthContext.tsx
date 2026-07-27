@@ -13,13 +13,6 @@ interface AuthContextValue {
   household: Household | null;
   loading: boolean;
   login: (email: string, password: string) => Promise<void>;
-  signup: (data: {
-    email: string;
-    password: string;
-    name: string;
-    inviteCode?: string;
-    householdName?: string;
-  }) => Promise<void>;
   logout: () => void;
 }
 
@@ -55,16 +48,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setHousehold(res.household);
   }, []);
 
-  const signup = useCallback(
-    async (data: { email: string; password: string; name: string; inviteCode?: string; householdName?: string }) => {
-      const res = await api.post<AuthResponse>("/auth/signup", data);
-      setToken(res.token);
-      setUser(res.user);
-      setHousehold(res.household);
-    },
-    []
-  );
-
   const logout = useCallback(() => {
     setToken(null);
     setUser(null);
@@ -72,9 +55,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, household, loading, login, signup, logout }}>
-      {children}
-    </AuthContext.Provider>
+    <AuthContext.Provider value={{ user, household, loading, login, logout }}>{children}</AuthContext.Provider>
   );
 }
 

@@ -2,12 +2,21 @@ export interface User {
   id: string;
   email: string;
   name: string;
+  isAdmin: boolean;
 }
 
 export interface Household {
   id: string;
   name: string;
   inviteCode: string;
+}
+
+export interface ManagedUser {
+  id: string;
+  name: string;
+  email: string;
+  isAdmin: boolean;
+  createdAt: string;
 }
 
 export interface Ingredient {

@@ -18,13 +18,13 @@ async function main() {
 
   const household = await prisma.household.create({
     data: {
-      name: "Demo Household",
+      name: "Hornsby Household",
       inviteCode: generateInviteCode(),
     },
   });
 
   await prisma.user.create({
-    data: { email: email1, passwordHash, name: "Demo User", householdId: household.id },
+    data: { email: email1, passwordHash, name: "Demo User", householdId: household.id, isAdmin: true },
   });
   await prisma.user.create({
     data: { email: email2, passwordHash, name: "Demo Partner", householdId: household.id },
@@ -85,8 +85,7 @@ async function main() {
   });
 
   console.log("Seed complete.");
-  console.log(`Household invite code: ${household.inviteCode}`);
-  console.log(`Login as ${email1} or ${email2} with password: password123`);
+  console.log(`Login as ${email1} (admin) or ${email2} with password: password123`);
 }
 
 main()
