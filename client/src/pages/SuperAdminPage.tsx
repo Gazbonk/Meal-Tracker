@@ -4,7 +4,7 @@ import { useAuth } from "../context/AuthContext";
 import { ManagedHousehold } from "../types";
 
 const inputClass =
-  "border border-gray-200 bg-gray-50 rounded-xl px-3 py-2 text-sm transition-shadow focus:outline-none focus:ring-2 focus:ring-brand-500 focus:bg-white";
+  "border border-line bg-canvas rounded px-3 py-2 text-sm transition-shadow focus:outline-none focus:ring-2 focus:ring-signal";
 
 export default function SuperAdminPage() {
   const { household: currentHousehold } = useAuth();
@@ -74,15 +74,15 @@ export default function SuperAdminPage() {
 
   return (
     <div className="max-w-2xl">
-      <h1 className="text-2xl font-semibold text-gray-800 tracking-tight mb-5">Households</h1>
+      <h1 className="font-display text-2xl font-semibold text-ink tracking-tight mb-5">Households</h1>
 
-      {error && <p className="text-sm text-red-600 mb-3">{error}</p>}
+      {error && <p className="text-sm text-failed mb-3">{error}</p>}
 
       <form
         onSubmit={handleCreate}
-        className="bg-white border border-gray-200/70 rounded-2xl shadow-soft p-5 mb-6 space-y-3.5"
+        className="bg-surface border border-line rounded p-5 mb-6 space-y-3.5"
       >
-        <h2 className="text-sm font-semibold text-gray-700">Create a new household</h2>
+        <h2 className="text-sm font-semibold text-ink">Create a new household</h2>
         <input
           required
           value={householdName}
@@ -116,41 +116,42 @@ export default function SuperAdminPage() {
             className={inputClass}
           />
         </div>
-        <p className="text-xs text-gray-400">
+        <p className="text-xs text-muted">
           They'll be created as the admin of this new, fully separate household.
         </p>
         <button
           type="submit"
           disabled={creating}
-          className="bg-brand-600 text-white text-sm px-4 py-2 rounded-xl font-medium shadow-soft hover:bg-brand-700 hover:shadow-soft-md transition-all disabled:opacity-50"
+          className="bg-sageDeep text-white text-sm px-4 py-2 rounded font-medium hover:bg-signal transition-colors disabled:opacity-50"
         >
           {creating ? "Creating..." : "Create household"}
         </button>
       </form>
 
       {loading ? (
-        <div className="bg-white rounded-2xl border border-gray-200/70 h-40 animate-pulse" />
+        <div className="bg-surface rounded border border-line h-40 animate-pulse" />
       ) : (
-        <div className="bg-white border border-gray-200/70 rounded-2xl shadow-soft overflow-hidden">
-          <ul className="divide-y divide-gray-100">
+        <div className="bg-surface border border-line rounded overflow-hidden">
+          <ul className="divide-y divide-line">
             {households.map((h) => (
               <li key={h.id} className="p-4 flex items-center justify-between gap-3 flex-wrap">
                 <div>
-                  <p className="text-sm font-medium text-gray-800">
+                  <p className="text-sm font-medium text-ink">
                     {h.name}{" "}
                     {h.id === currentHousehold?.id && (
-                      <span className="text-xs text-gray-400 font-normal">(yours)</span>
+                      <span className="text-xs text-muted font-normal">(yours)</span>
                     )}
                   </p>
-                  <p className="text-xs text-gray-500">
+                  <p className="text-xs text-muted">
                     {h.userCount} user{h.userCount === 1 ? "" : "s"} · {h.recipeCount} recipe
-                    {h.recipeCount === 1 ? "" : "s"} · invite code {h.inviteCode}
+                    {h.recipeCount === 1 ? "" : "s"} · invite code{" "}
+                    <span className="font-mono">{h.inviteCode}</span>
                   </p>
                 </div>
                 {h.id !== currentHousehold?.id && (
                   <button
                     onClick={() => handleDelete(h)}
-                    className="text-red-500 hover:text-red-700 hover:bg-red-50 font-medium text-xs px-2.5 py-1.5 rounded-lg transition-colors"
+                    className="text-failed hover:bg-surface2 font-medium text-xs px-2.5 py-1.5 rounded transition-colors"
                   >
                     Delete
                   </button>

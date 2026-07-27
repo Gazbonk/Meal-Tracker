@@ -4,7 +4,7 @@ import { useAuth } from "../context/AuthContext";
 import { ManagedUser } from "../types";
 
 const inputClass =
-  "border border-gray-200 bg-gray-50 rounded-xl px-3 py-2 text-sm transition-shadow focus:outline-none focus:ring-2 focus:ring-brand-500 focus:bg-white";
+  "border border-line bg-canvas rounded px-3 py-2 text-sm transition-shadow focus:outline-none focus:ring-2 focus:ring-signal";
 
 function initials(name: string) {
   return name
@@ -100,15 +100,15 @@ export default function AdminPage() {
 
   return (
     <div className="max-w-2xl">
-      <h1 className="text-2xl font-semibold text-gray-800 tracking-tight mb-5">Manage accounts</h1>
+      <h1 className="font-display text-2xl font-semibold text-ink tracking-tight mb-5">Manage accounts</h1>
 
-      {error && <p className="text-sm text-red-600 mb-3">{error}</p>}
+      {error && <p className="text-sm text-failed mb-3">{error}</p>}
 
       <form
         onSubmit={handleCreate}
-        className="bg-white border border-gray-200/70 rounded-2xl shadow-soft p-5 mb-6 space-y-3.5"
+        className="bg-surface border border-line rounded p-5 mb-6 space-y-3.5"
       >
-        <h2 className="text-sm font-semibold text-gray-700">Add an account</h2>
+        <h2 className="text-sm font-semibold text-ink">Add an account</h2>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
           <input
             required
@@ -135,69 +135,61 @@ export default function AdminPage() {
             className={inputClass}
           />
         </div>
-        <label className="flex items-center gap-2 text-sm text-gray-600">
+        <label className="flex items-center gap-2 text-sm text-muted">
           <input
             type="checkbox"
             checked={isAdmin}
             onChange={(e) => setIsAdmin(e.target.checked)}
-            className="h-4 w-4 rounded accent-brand-600"
+            className="h-4 w-4 rounded accent-sageDeep"
           />
           Grant admin access
         </label>
         <button
           type="submit"
           disabled={creating}
-          className="bg-brand-600 text-white text-sm px-4 py-2 rounded-xl font-medium shadow-soft hover:bg-brand-700 hover:shadow-soft-md transition-all disabled:opacity-50"
+          className="bg-sageDeep text-white text-sm px-4 py-2 rounded font-medium hover:bg-signal transition-colors disabled:opacity-50"
         >
           {creating ? "Creating..." : "Create account"}
         </button>
       </form>
 
       {loading ? (
-        <div className="bg-white rounded-2xl border border-gray-200/70 h-40 animate-pulse" />
+        <div className="bg-surface rounded border border-line h-40 animate-pulse" />
       ) : (
-        <div className="bg-white border border-gray-200/70 rounded-2xl shadow-soft overflow-hidden">
-          <ul className="divide-y divide-gray-100">
+        <div className="bg-surface border border-line rounded overflow-hidden">
+          <ul className="divide-y divide-line">
             {users.map((u) => (
               <li key={u.id} className="p-4">
                 <div className="flex items-center justify-between gap-3 flex-wrap">
                   <div className="flex items-center gap-3">
-                    <span className="flex h-9 w-9 items-center justify-center rounded-full bg-brand-100 text-brand-700 text-xs font-semibold shrink-0">
+                    <span className="flex h-9 w-9 items-center justify-center rounded-full bg-sage text-sageDeep text-xs font-semibold shrink-0">
                       {initials(u.name)}
                     </span>
                     <div>
-                      <p className="text-sm font-medium text-gray-800">
-                        {u.name} {u.id === currentUser?.id && <span className="text-xs text-gray-400 font-normal">(you)</span>}
+                      <p className="text-sm font-medium text-ink">
+                        {u.name} {u.id === currentUser?.id && <span className="text-xs text-muted font-normal">(you)</span>}
                       </p>
-                      <p className="text-xs text-gray-500">{u.email}</p>
+                      <p className="text-xs text-muted">{u.email}</p>
                     </div>
-                    {u.isAdmin && (
-                      <span className="bg-brand-100 text-brand-700 px-2 py-0.5 rounded-full text-[11px] font-medium">
-                        Admin
-                      </span>
-                    )}
-                    {u.isSuperAdmin && (
-                      <span className="bg-gray-800 text-white px-2 py-0.5 rounded-full text-[11px] font-medium">
-                        Super Admin
-                      </span>
-                    )}
+                    {u.isAdmin && <span className="bk-pill text-sageDeep bg-sage/30">Admin</span>}
+                    {u.isSuperAdmin && <span className="bk-pill text-white bg-ink">Super Admin</span>}
                   </div>
                   <div className="flex items-center gap-1 text-xs">
                     <button
                       onClick={() => toggleAdmin(u)}
-                      className="text-brand-600 hover:text-brand-800 hover:bg-brand-50 font-medium px-2.5 py-1.5 rounded-lg transition-colors"
+                      className="text-sageDeep hover:text-signal hover:bg-surface2 font-medium px-2.5 py-1.5 rounded transition-colors"
                     >
                       {u.isAdmin ? "Revoke admin" : "Make admin"}
                     </button>
                     <button
                       onClick={() => setEditingId(editingId === u.id ? null : u.id)}
-                      className="text-gray-500 hover:text-gray-700 hover:bg-gray-100 font-medium px-2.5 py-1.5 rounded-lg transition-colors"
+                      className="text-muted hover:text-ink hover:bg-surface2 font-medium px-2.5 py-1.5 rounded transition-colors"
                     >
                       Reset password
                     </button>
                     <button
                       onClick={() => handleDelete(u.id)}
-                      className="text-red-500 hover:text-red-700 hover:bg-red-50 font-medium px-2.5 py-1.5 rounded-lg transition-colors"
+                      className="text-failed hover:bg-surface2 font-medium px-2.5 py-1.5 rounded transition-colors"
                     >
                       Delete
                     </button>
@@ -216,7 +208,7 @@ export default function AdminPage() {
                     />
                     <button
                       onClick={() => handleResetPassword(u.id)}
-                      className="bg-brand-600 text-white text-xs px-3.5 py-2 rounded-xl font-medium hover:bg-brand-700 transition-colors"
+                      className="bg-sageDeep text-white text-xs px-3.5 py-2 rounded font-medium hover:bg-signal transition-colors"
                     >
                       Save
                     </button>

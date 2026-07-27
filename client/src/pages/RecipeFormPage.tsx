@@ -6,7 +6,7 @@ import { Ingredient, Recipe, RecipeImportDraft } from "../types";
 const emptyIngredient = (): Ingredient => ({ name: "", quantity: "", unit: "", category: "" });
 
 const inputClass =
-  "w-full border border-gray-200 bg-gray-50 rounded-xl px-3.5 py-2.5 text-sm transition-shadow focus:outline-none focus:ring-2 focus:ring-brand-500 focus:bg-white";
+  "w-full border border-line bg-canvas rounded px-3.5 py-2.5 text-sm transition-shadow focus:outline-none focus:ring-2 focus:ring-signal";
 
 function hostnameOf(url: string): string {
   try {
@@ -102,17 +102,17 @@ export default function RecipeFormPage() {
     }
   }
 
-  if (loading) return <p className="text-gray-400">Loading...</p>;
+  if (loading) return <p className="text-muted">Loading...</p>;
 
   return (
     <div className="max-w-2xl">
-      <h1 className="text-2xl font-semibold text-gray-800 tracking-tight mb-1">
+      <h1 className="font-display text-2xl font-semibold text-ink tracking-tight mb-1">
         {isEditing ? "Edit recipe" : "New recipe"}
       </h1>
       {sourceUrl && (
-        <p className="text-sm text-gray-400 mb-4">
+        <p className="text-sm text-muted mb-4">
           Imported from{" "}
-          <a href={sourceUrl} target="_blank" rel="noreferrer" className="text-brand-600 hover:text-brand-800">
+          <a href={sourceUrl} target="_blank" rel="noreferrer" className="text-sageDeep hover:text-signal">
             {hostnameOf(sourceUrl)}
           </a>
         </p>
@@ -120,15 +120,15 @@ export default function RecipeFormPage() {
 
       <form
         onSubmit={handleSubmit}
-        className={`space-y-5 bg-white border border-gray-200/70 rounded-2xl shadow-soft p-6 ${sourceUrl ? "" : "mt-4"}`}
+        className={`space-y-5 bg-surface border border-line rounded p-6 ${sourceUrl ? "" : "mt-4"}`}
       >
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1.5">Name</label>
+          <label className="block text-sm font-medium text-ink mb-1.5">Name</label>
           <input required value={name} onChange={(e) => setName(e.target.value)} className={inputClass} />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1.5">Tags (comma-separated)</label>
+          <label className="block text-sm font-medium text-ink mb-1.5">Tags (comma-separated)</label>
           <input
             value={tags}
             onChange={(e) => setTags(e.target.value)}
@@ -138,38 +138,38 @@ export default function RecipeFormPage() {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Ingredients</label>
+          <label className="block text-sm font-medium text-ink mb-2">Ingredients</label>
           <div className="space-y-2">
             {ingredients.map((ing, i) => (
-              <div key={i} className="flex items-center gap-2 bg-gray-50 rounded-xl p-2">
+              <div key={i} className="flex items-center gap-2 bg-canvas rounded p-2">
                 <input
                   value={ing.name}
                   onChange={(e) => updateIngredient(i, "name", e.target.value)}
                   placeholder="Name"
-                  className="flex-[2] min-w-0 border border-gray-200 bg-white rounded-lg px-2.5 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+                  className="flex-[2] min-w-0 border border-line bg-surface rounded px-2.5 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-signal"
                 />
                 <input
                   value={ing.quantity || ""}
                   onChange={(e) => updateIngredient(i, "quantity", e.target.value)}
                   placeholder="Qty"
-                  className="w-16 border border-gray-200 bg-white rounded-lg px-2.5 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+                  className="w-16 border border-line bg-surface rounded px-2.5 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-signal"
                 />
                 <input
                   value={ing.unit || ""}
                   onChange={(e) => updateIngredient(i, "unit", e.target.value)}
                   placeholder="Unit"
-                  className="w-16 border border-gray-200 bg-white rounded-lg px-2.5 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+                  className="w-16 border border-line bg-surface rounded px-2.5 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-signal"
                 />
                 <input
                   value={ing.category || ""}
                   onChange={(e) => updateIngredient(i, "category", e.target.value)}
                   placeholder="Category"
-                  className="flex-1 min-w-0 border border-gray-200 bg-white rounded-lg px-2.5 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+                  className="flex-1 min-w-0 border border-line bg-surface rounded px-2.5 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-signal"
                 />
                 <button
                   type="button"
                   onClick={() => removeIngredientRow(i)}
-                  className="shrink-0 h-7 w-7 flex items-center justify-center rounded-full text-gray-400 hover:text-red-600 hover:bg-red-50 transition-colors"
+                  className="shrink-0 h-7 w-7 flex items-center justify-center rounded-full text-muted hover:text-failed hover:bg-canvas transition-colors"
                 >
                   ✕
                 </button>
@@ -179,14 +179,14 @@ export default function RecipeFormPage() {
           <button
             type="button"
             onClick={addIngredientRow}
-            className="mt-2.5 text-sm text-brand-600 hover:text-brand-800 font-medium"
+            className="mt-2.5 text-sm text-sageDeep hover:text-signal font-medium"
           >
             + Add ingredient
           </button>
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1.5">Instructions</label>
+          <label className="block text-sm font-medium text-ink mb-1.5">Instructions</label>
           <textarea
             value={instructions}
             onChange={(e) => setInstructions(e.target.value)}
@@ -195,20 +195,20 @@ export default function RecipeFormPage() {
           />
         </div>
 
-        {error && <p className="text-sm text-red-600">{error}</p>}
+        {error && <p className="text-sm text-failed">{error}</p>}
 
         <div className="flex gap-3 pt-1">
           <button
             type="submit"
             disabled={submitting}
-            className="bg-brand-600 text-white px-4 py-2 rounded-xl font-medium shadow-soft hover:bg-brand-700 hover:shadow-soft-md transition-all disabled:opacity-50"
+            className="bg-sageDeep text-white px-4 py-2 rounded font-medium hover:bg-signal transition-colors disabled:opacity-50"
           >
             {submitting ? "Saving..." : "Save recipe"}
           </button>
           <button
             type="button"
             onClick={() => navigate("/recipes")}
-            className="px-4 py-2 rounded-xl font-medium text-gray-600 hover:bg-gray-100 transition-colors"
+            className="px-4 py-2 rounded font-medium text-muted hover:bg-surface2 transition-colors"
           >
             Cancel
           </button>

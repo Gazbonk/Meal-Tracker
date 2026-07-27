@@ -75,34 +75,34 @@ export default function CalendarPage() {
   return (
     <div>
       <div className="flex items-center justify-between mb-5">
-        <h1 className="text-2xl font-semibold text-gray-800 tracking-tight">Weekly Plan</h1>
-        <div className="flex items-center gap-1 text-sm bg-white border border-gray-200 rounded-full p-1 shadow-soft">
+        <h1 className="font-display text-2xl font-semibold text-ink tracking-tight">Weekly Plan</h1>
+        <div className="flex items-center gap-1 text-sm bg-surface border border-line rounded p-1">
           <button
             onClick={() => setWeekStart((w) => addDays(w, -7))}
-            className="px-3 py-1.5 rounded-full text-gray-600 hover:bg-gray-100 transition-colors"
+            className="px-3 py-1.5 rounded text-muted hover:bg-surface2 transition-colors"
           >
             ← Prev
           </button>
           <button
             onClick={() => setWeekStart(startOfWeek(new Date()))}
-            className="px-3 py-1.5 rounded-full font-medium bg-brand-600 text-white hover:bg-brand-700 transition-colors"
+            className="px-3 py-1.5 rounded font-medium bg-sageDeep text-white hover:bg-signal transition-colors"
           >
             Today
           </button>
           <button
             onClick={() => setWeekStart((w) => addDays(w, 7))}
-            className="px-3 py-1.5 rounded-full text-gray-600 hover:bg-gray-100 transition-colors"
+            className="px-3 py-1.5 rounded text-muted hover:bg-surface2 transition-colors"
           >
             Next →
           </button>
         </div>
       </div>
 
-      {error && <p className="text-red-600 text-sm mb-3">{error}</p>}
+      {error && <p className="text-failed text-sm mb-3">{error}</p>}
       {loading ? (
         <div className="grid grid-cols-1 sm:grid-cols-7 gap-3">
           {Array.from({ length: 7 }).map((_, i) => (
-            <div key={i} className="bg-white rounded-2xl border border-gray-200/70 h-64 animate-pulse" />
+            <div key={i} className="bg-surface rounded border border-line h-64 animate-pulse" />
           ))}
         </div>
       ) : (
@@ -113,33 +113,31 @@ export default function CalendarPage() {
             return (
               <div
                 key={dateStr}
-                className={`bg-white rounded-2xl border overflow-hidden transition-shadow ${
-                  isToday ? "border-brand-300 shadow-soft-md" : "border-gray-200/70 shadow-soft"
+                className={`bg-surface rounded border overflow-hidden ${
+                  isToday ? "border-signal" : "border-line"
                 }`}
               >
                 <div
                   className={`px-3 py-2.5 text-sm font-semibold ${
-                    isToday
-                      ? "bg-gradient-to-r from-brand-600 to-brand-700 text-white"
-                      : "bg-gray-50/80 text-gray-700"
+                    isToday ? "bg-sageDeep text-white" : "bg-surface2 text-ink"
                   }`}
                 >
                   {formatDayLabel(day)}
                 </div>
-                <div className="divide-y divide-gray-100">
+                <div className="divide-y divide-line">
                   {MEAL_TYPES.map((mealType) => {
                     const entry = entryFor(dateStr, mealType);
                     const title = entry?.recipe?.name || entry?.customTitle;
                     return (
                       <div key={mealType} className="relative p-2.5 min-h-[74px]">
-                        <p className="text-[10px] font-semibold uppercase tracking-wider text-gray-400 mb-1.5">
+                        <p className="bk-eyebrow mb-1.5">
                           {MEAL_LABELS[mealType]}
                         </p>
                         {title ? (
                           <div>
                             <button
                               onClick={() => setEditing({ date: dateStr, mealType })}
-                              className="text-sm text-left font-medium text-gray-800 hover:text-brand-700 transition-colors"
+                              className="text-sm text-left font-medium text-ink hover:text-sageDeep transition-colors"
                             >
                               {title}
                             </button>
@@ -147,7 +145,7 @@ export default function CalendarPage() {
                               <button
                                 onClick={() => addIngredientsToShoppingList(entry.recipeId as string)}
                                 disabled={addingToList === entry.recipeId}
-                                className="block mt-1 text-[11px] text-brand-600 hover:text-brand-800 disabled:opacity-50"
+                                className="block mt-1 text-[11px] text-sageDeep hover:text-signal disabled:opacity-50"
                               >
                                 {addingToList === entry.recipeId ? "Adding..." : "+ Add ingredients to list"}
                               </button>
@@ -156,7 +154,7 @@ export default function CalendarPage() {
                         ) : (
                           <button
                             onClick={() => setEditing({ date: dateStr, mealType })}
-                            className="text-sm text-gray-300 hover:text-brand-600 border border-dashed border-gray-200 hover:border-brand-300 rounded-lg px-2 py-1 w-full text-left transition-colors"
+                            className="text-sm text-muted hover:text-sageDeep border border-dashed border-line hover:border-sageDeep rounded px-2 py-1 w-full text-left transition-colors"
                           >
                             + Add meal
                           </button>

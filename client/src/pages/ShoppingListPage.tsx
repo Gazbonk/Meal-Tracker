@@ -73,9 +73,9 @@ export default function ShoppingListPage() {
   return (
     <div className="max-w-2xl">
       <div className="flex items-center justify-between mb-5">
-        <h1 className="text-2xl font-semibold text-gray-800 tracking-tight">Shopping List</h1>
+        <h1 className="font-display text-2xl font-semibold text-ink tracking-tight">Shopping List</h1>
         {hasChecked && (
-          <button onClick={clearChecked} className="text-sm text-gray-500 hover:text-red-600 transition-colors">
+          <button onClick={clearChecked} className="text-sm text-muted hover:text-failed transition-colors">
             Clear checked items
           </button>
         )}
@@ -83,74 +83,74 @@ export default function ShoppingListPage() {
 
       <form
         onSubmit={handleAdd}
-        className="flex flex-wrap gap-2 mb-5 bg-white border border-gray-200/70 rounded-2xl shadow-soft p-3"
+        className="flex flex-wrap gap-2 mb-5 bg-surface border border-line rounded p-3"
       >
         <input
           value={name}
           onChange={(e) => setName(e.target.value)}
           placeholder="Item name"
-          className="flex-1 min-w-[120px] border border-gray-200 bg-gray-50 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:bg-white transition-shadow"
+          className="flex-1 min-w-[120px] border border-line bg-canvas rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-signal transition-shadow"
         />
         <input
           value={quantity}
           onChange={(e) => setQuantity(e.target.value)}
           placeholder="Qty"
-          className="w-20 border border-gray-200 bg-gray-50 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:bg-white transition-shadow"
+          className="w-20 border border-line bg-canvas rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-signal transition-shadow"
         />
         <input
           value={category}
           onChange={(e) => setCategory(e.target.value)}
           placeholder="Category"
-          className="w-32 border border-gray-200 bg-gray-50 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:bg-white transition-shadow"
+          className="w-32 border border-line bg-canvas rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-signal transition-shadow"
         />
         <button
           type="submit"
-          className="bg-brand-600 text-white px-4 py-2 rounded-xl text-sm font-medium shadow-soft hover:bg-brand-700 transition-colors"
+          className="bg-sageDeep text-white px-4 py-2 rounded text-sm font-medium hover:bg-signal transition-colors"
         >
           Add
         </button>
       </form>
 
-      {error && <p className="text-red-600 text-sm mb-3">{error}</p>}
+      {error && <p className="text-failed text-sm mb-3">{error}</p>}
       {loading ? (
         <div className="space-y-4">
           {Array.from({ length: 2 }).map((_, i) => (
-            <div key={i} className="bg-white rounded-2xl border border-gray-200/70 h-28 animate-pulse" />
+            <div key={i} className="bg-surface rounded border border-line h-28 animate-pulse" />
           ))}
         </div>
       ) : items.length === 0 ? (
-        <div className="text-center py-16 bg-white rounded-2xl border border-dashed border-gray-200">
+        <div className="text-center py-16 bg-surface rounded border border-dashed border-line">
           <p className="text-3xl mb-2">🛒</p>
-          <p className="text-gray-500">Your shopping list is empty.</p>
+          <p className="text-muted">Your shopping list is empty.</p>
         </div>
       ) : (
         <div className="space-y-4">
           {grouped.map(([cat, catItems]) => (
             <div
               key={cat}
-              className="bg-white border border-gray-200/70 rounded-2xl shadow-soft overflow-hidden"
+              className="bg-surface border border-line rounded overflow-hidden"
             >
-              <div className="px-4 py-2.5 bg-gray-50/80 text-xs font-semibold uppercase tracking-wider text-gray-500">
+              <div className="bk-eyebrow px-4 py-2.5 bg-surface2 mb-0">
                 {cat}
               </div>
-              <ul className="divide-y divide-gray-100">
+              <ul className="divide-y divide-line">
                 {catItems.map((item) => (
-                  <li key={item.id} className="group flex items-center gap-3 px-4 py-2.5 hover:bg-gray-50/60 transition-colors">
+                  <li key={item.id} className="group flex items-center gap-3 px-4 py-2.5 hover:bg-surface2/60 transition-colors">
                     <input
                       type="checkbox"
                       checked={item.checked}
                       onChange={() => toggleChecked(item)}
-                      className="h-[18px] w-[18px] rounded accent-brand-600 cursor-pointer"
+                      className="h-[18px] w-[18px] rounded accent-sageDeep cursor-pointer"
                     />
-                    <span className={`flex-1 text-sm ${item.checked ? "line-through text-gray-400" : "text-gray-700"}`}>
+                    <span className={`flex-1 text-sm ${item.checked ? "line-through text-muted" : "text-ink"}`}>
                       {item.name}
                       {(item.quantity || item.unit) && (
-                        <span className="text-gray-400"> — {item.quantity} {item.unit}</span>
+                        <span className="text-muted"> — {item.quantity} {item.unit}</span>
                       )}
                     </span>
                     <button
                       onClick={() => removeItem(item.id)}
-                      className="text-gray-300 hover:text-red-500 text-sm opacity-0 group-hover:opacity-100 transition-opacity"
+                      className="text-muted hover:text-failed text-sm opacity-0 group-hover:opacity-100 transition-opacity"
                     >
                       ✕
                     </button>

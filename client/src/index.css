@@ -1,3 +1,5 @@
+@import url("https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600..800&family=Public+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap");
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -9,9 +11,13 @@ body,
 }
 
 body {
-  @apply bg-gray-100 text-gray-900 antialiased;
-  background-image: radial-gradient(at top, rgb(245 247 242 / 0.6), transparent 55%);
-  background-attachment: fixed;
+  @apply bg-canvas text-ink antialiased;
+}
+
+h1,
+h2,
+h3 {
+  @apply font-display font-bold tracking-tight;
 }
 
 * {
@@ -19,5 +25,15 @@ body {
 }
 
 ::selection {
-  @apply bg-brand-200 text-brand-900;
+  @apply bg-sage text-ink;
+}
+
+@layer components {
+  .bk-eyebrow {
+    @apply block font-mono text-xs font-medium uppercase tracking-widest text-muted mb-1;
+  }
+
+  .bk-pill {
+    @apply inline-block rounded-full font-mono text-xs uppercase tracking-widest px-2.5 py-0.5;
+  }
 }
