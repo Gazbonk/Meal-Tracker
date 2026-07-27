@@ -11,3 +11,19 @@ services:
       - .env
     volumes:
       - ./data:/app/data
+
+  # Optional: exposes the app at a public domain via Cloudflare Tunnel,
+  # with no router port-forwarding needed. Only starts when you ask for
+  # the "tunnel" profile — see README for setup. Requires
+  # CLOUDFLARE_TUNNEL_TOKEN to be set in .env.
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    container_name: hornsby-meal-tracker-tunnel
+    restart: unless-stopped
+    profiles:
+      - tunnel
+    command: tunnel run
+    environment:
+      - TUNNEL_TOKEN=${CLOUDFLARE_TUNNEL_TOKEN}
+    depends_on:
+      - app
