@@ -1,4 +1,6 @@
 import "dotenv/config";
+import path from "path";
+import fs from "fs";
 import express from "express";
 import cors from "cors";
 import authRoutes from "./routes/auth";
@@ -20,6 +22,17 @@ app.use("/api/recipes", recipeRoutes);
 app.use("/api/mealplan", mealPlanRoutes);
 app.use("/api/shoppinglist", shoppingListRoutes);
 app.use("/api/admin", adminRoutes);
+
+// In the Docker image the built client sits alongside the server at
+// /app/client-dist. In local dev that directory doesn't exist — Vite
+// serves the client itself and proxies /api to this server instead.
+const clientDist = path.join(__dirname, "../../client-dist");
+if (fs.existsSync(clientDist)) {
+  app.use(express.static(clientDist));
+  app.get(/^\/(?!api).*/, (_req, res) => {
+    res.sendFile(path.join(clientDist, "index.html"));
+  });
+}
 
 app.use((err: unknown, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
   console.error(err);

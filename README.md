@@ -50,6 +50,30 @@ There's no public signup page — signing up is disabled entirely.
 - **Adding your partner (or anyone else)**: log in as an admin, open **Admin** in the nav, and use "Add an account" to create their login directly — no invite code needed, they're added straight to your shared household.
 - From the same `/admin` page you can promote/demote admins, reset anyone's password, or delete an account. You can't remove your own admin access or delete the last remaining admin.
 
+## Running in Docker (e.g. on a Raspberry Pi)
+
+A single Docker image bundles the built client and the API together, backed by a SQLite file on a bind-mounted volume so your data survives container rebuilds. See `docker-compose.yml`, `Dockerfile`, and `server/docker-entrypoint.sh`.
+
+```bash
+# On the Pi (64-bit Raspberry Pi OS, with Docker + the compose plugin installed):
+git clone https://github.com/gazbonk/meal-tracker.git
+cd meal-tracker
+
+cp .env.example .env
+nano .env   # set JWT_SECRET and ADMIN_EMAIL/ADMIN_PASSWORD/ADMIN_NAME at minimum
+
+docker compose build
+docker compose up -d
+
+docker compose logs -f   # watch it come up; Ctrl+C to stop watching (container keeps running)
+```
+
+Then visit `http://<pi-ip-address>:4000` from any device on your home network. On startup the container automatically runs pending database migrations and — the very first time, when the database is empty — creates one admin account from the `ADMIN_*` values in `.env`. Log in with that, then use `/admin` to add your partner's account.
+
+The SQLite database file lives at `./data/prod.db` on the Pi's own filesystem (outside the container), so `docker compose down` / rebuilding the image never loses data. Back up that one file to back up the whole app.
+
+To update after pulling new code: `docker compose up -d --build`.
+
 ## Project structure
 
 ```
@@ -58,10 +82,14 @@ server/            Express API (TypeScript)
   prisma/seed.ts         Demo data seed script
   src/bootstrapAdmin.ts  Creates the first admin account on startup if none exist
   src/routes/            auth, recipes, mealplan, shoppinglist, admin endpoints
+  docker-entrypoint.sh   Runs `prisma migrate deploy` then starts the server (Docker only)
 client/             React app (TypeScript, Vite, Tailwind)
   src/pages/              Login, Calendar, Recipes, Recipe form, Shopping list, Admin
   src/context/AuthContext.tsx   Stores the JWT and current user/household
   src/api/client.ts             Thin fetch wrapper that attaches the auth token
+Dockerfile           Multi-stage build: client + server into one runtime image
+docker-compose.yml   Single-service compose file for self-hosting (e.g. on a Pi)
+.env.example         Template for the root .env used by docker-compose
 ```
 
 ## Notes for production use

@@ -1,7 +1,11 @@
 node_modules/
 dist/
 build/
+client-dist/
 *.tsbuildinfo
+
+# Docker bind-mounted database volume
+/data/
 
 # Environment files with secrets
 .env

@@ -1,0 +1,14 @@
+node_modules
+**/node_modules
+dist
+**/dist
+client-dist
+.git
+.gitignore
+*.md
+data
+.env
+.env.*
+!server/.env.example
+server/*.db
+server/*.db-journal

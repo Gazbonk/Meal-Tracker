@@ -4,7 +4,11 @@ datasource db {
 }
 
 generator client {
-  provider = "prisma-client-js"
+  provider      = "prisma-client-js"
+  // "native" covers local dev on whatever machine you're developing on;
+  // linux-arm64-openssl-3.0.x is the Debian-slim arm64 image used to run
+  // this in Docker on a Raspberry Pi (see Dockerfile).
+  binaryTargets = ["native", "linux-arm64-openssl-3.0.x"]
 }
 
 model Household {
