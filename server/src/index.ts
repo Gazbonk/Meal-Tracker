@@ -1,0 +1,29 @@
+import "dotenv/config";
+import express from "express";
+import cors from "cors";
+import authRoutes from "./routes/auth";
+import recipeRoutes from "./routes/recipes";
+import mealPlanRoutes from "./routes/mealplan";
+import shoppingListRoutes from "./routes/shoppinglist";
+
+const app = express();
+
+app.use(cors({ origin: process.env.CLIENT_ORIGIN || "http://localhost:5173" }));
+app.use(express.json());
+
+app.get("/api/health", (_req, res) => res.json({ ok: true }));
+
+app.use("/api/auth", authRoutes);
+app.use("/api/recipes", recipeRoutes);
+app.use("/api/mealplan", mealPlanRoutes);
+app.use("/api/shoppinglist", shoppingListRoutes);
+
+app.use((err: unknown, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
+  console.error(err);
+  res.status(500).json({ error: "Internal server error" });
+});
+
+const PORT = Number(process.env.PORT) || 4000;
+app.listen(PORT, () => {
+  console.log(`Meal Tracker API listening on http://localhost:${PORT}`);
+});

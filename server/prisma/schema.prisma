@@ -1,0 +1,84 @@
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Household {
+  id         String   @id @default(cuid())
+  name       String
+  inviteCode String   @unique
+  createdAt  DateTime @default(now())
+
+  users            User[]
+  recipes          Recipe[]
+  mealPlanEntries  MealPlanEntry[]
+  shoppingItems    ShoppingListItem[]
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  name         String
+  createdAt    DateTime @default(now())
+
+  householdId String
+  household   Household @relation(fields: [householdId], references: [id], onDelete: Cascade)
+}
+
+model Recipe {
+  id           String   @id @default(cuid())
+  name         String
+  instructions String?
+  tags         String? // comma-separated
+  createdAt    DateTime @default(now())
+
+  householdId String
+  household   Household @relation(fields: [householdId], references: [id], onDelete: Cascade)
+
+  ingredients RecipeIngredient[]
+  mealPlanEntries MealPlanEntry[]
+}
+
+model RecipeIngredient {
+  id       String  @id @default(cuid())
+  name     String
+  quantity String?
+  unit     String?
+  category String? // produce, dairy, etc. used for shopping list grouping
+
+  recipeId String
+  recipe   Recipe @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+}
+
+model MealPlanEntry {
+  id          String  @id @default(cuid())
+  date        String // ISO date (YYYY-MM-DD)
+  mealType    String // breakfast | lunch | dinner
+  customTitle String?
+
+  householdId String
+  household   Household @relation(fields: [householdId], references: [id], onDelete: Cascade)
+
+  recipeId String?
+  recipe   Recipe? @relation(fields: [recipeId], references: [id], onDelete: SetNull)
+
+  @@unique([householdId, date, mealType])
+}
+
+model ShoppingListItem {
+  id       String  @id @default(cuid())
+  name     String
+  quantity String?
+  unit     String?
+  category String?
+  checked  Boolean @default(false)
+  createdAt DateTime @default(now())
+
+  householdId String
+  household   Household @relation(fields: [householdId], references: [id], onDelete: Cascade)
+}

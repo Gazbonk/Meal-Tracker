@@ -1,0 +1,54 @@
+import { useState } from "react";
+import { NavLink } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
+
+const linkClass = ({ isActive }: { isActive: boolean }) =>
+  `px-3 py-2 rounded-md text-sm font-medium ${
+    isActive ? "bg-brand-600 text-white" : "text-gray-600 hover:bg-gray-100"
+  }`;
+
+export default function Nav() {
+  const { user, household, logout } = useAuth();
+  const [showInvite, setShowInvite] = useState(false);
+
+  return (
+    <nav className="bg-white border-b border-gray-200 sticky top-0 z-10">
+      <div className="max-w-5xl mx-auto px-4 flex items-center justify-between h-14">
+        <div className="flex items-center gap-1">
+          <span className="font-bold text-brand-700 mr-3">🍽️ Meal Tracker</span>
+          <NavLink to="/" end className={linkClass}>
+            Calendar
+          </NavLink>
+          <NavLink to="/recipes" className={linkClass}>
+            Recipes
+          </NavLink>
+          <NavLink to="/shopping-list" className={linkClass}>
+            Shopping List
+          </NavLink>
+        </div>
+        <div className="flex items-center gap-3 text-sm text-gray-500 relative">
+          {household && (
+            <button
+              onClick={() => setShowInvite((v) => !v)}
+              className="hidden sm:inline hover:text-brand-700"
+              title="Show invite code for your partner"
+            >
+              {household.name}
+            </button>
+          )}
+          {user && <span className="font-medium text-gray-700">{user.name}</span>}
+          <button onClick={logout} className="text-gray-400 hover:text-gray-700">
+            Log out
+          </button>
+
+          {showInvite && household && (
+            <div className="absolute right-0 top-10 bg-white border border-gray-200 shadow-lg rounded-md p-4 w-64 z-20">
+              <p className="text-xs text-gray-500 mb-1">Share this code so your partner can join:</p>
+              <p className="text-lg font-mono font-bold tracking-widest text-brand-700">{household.inviteCode}</p>
+            </div>
+          )}
+        </div>
+      </div>
+    </nav>
+  );
+}
